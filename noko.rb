@@ -22,41 +22,38 @@ end
 file = open(url_itineraries).read
 doc = Nokogiri::HTML(file)
 
-#Recupere les noms des differents itineraires
-itineraries = []
+itinerarie_name = ""
 
+itineraries = []
+hash_cities = {}
+cities = []
+result = []
+
+# Scrapping des sections (itineraries_names)
 i = 1
 (doc.search(".NarrativeSideMenu").children.count - 2).times do
-  itineraries << doc.search(".NarrativeSideMenu").children[i].children[0].text
+  itinerarie_name = doc.search(".NarrativeSideMenu").children[i].children[0].text
+  string = "##{itinerarie_name.downcase.gsub(/\s/, '-').gsub(/&/, '')}"
+
+  # Scrapping des cities de cet itinerarie_name
+  doc.search("#{string} .page").each do |noko|
+    cities << noko.text
+  end
+
+  # Scrapping du temps de l'itinerarie_name
+  time = doc.search("#{string} ul").text
+
+  #Ajout au hash resultat
+  hash_cities[:itinerarie] = itinerarie_name
+  hash_cities[:time] = time
+  hash_cities[:cities] = cities
+  result << hash_cities
+  cities = []
+  hash_cities = {}
   i += 1
 end
 
-# Scrapping des cities
-cities = {}
-doc.search(".page").each do |noko|
-  cities << noko.text
-end
-
-# Scrapping des temps de voyage
-# times = []
-# sections = doc.search(".NarrativeBodyText ul")
-# sections.each do |noko|
-#   p times << noko.text
-# end
+p result
 
 
-# En recupérant les id des différentes sections. Reste à recuperer toutes ces id.
-# cities = []
-# doc.search("#the-central-corridor .page").each do |noko|
-#   cities << noko
-# end
-# cities.map! { |city| city.text }
-
-
-# p itineraries
-
-# p cities
-# p times
-
-
-# TODO : Reussir a separer les villes en fonction des temps.
+# PROBLEME : Section 2 du Canada n'a pas le meme nom que prévu... l'itinéraire associe est donc vide.
