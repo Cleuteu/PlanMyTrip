@@ -4,7 +4,7 @@ require 'json'
 
 # Recuparation de l'url des itineraries
 
-url = "https://www.lonelyplanet.com/peru"
+url = "https://www.lonelyplanet.com/burkina-faso"
 file = open(url).read
 doc = Nokogiri::HTML(file)
 # Quand itineraries n'est pas en 3eme position (ex: Peru) il faut iterer pour trouver sa position
@@ -23,8 +23,6 @@ file = open(url_itineraries).read
 doc = Nokogiri::HTML(file)
 
 itinerarie_name = ""
-
-itineraries = []
 hash_cities = {}
 cities = []
 result = []
@@ -33,7 +31,7 @@ result = []
 i = 1
 (doc.search(".NarrativeSideMenu").children.count - 2).times do
   itinerarie_name = doc.search(".NarrativeSideMenu").children[i].children[0].text
-  string = "##{itinerarie_name.downcase.gsub(/\s/, '-').gsub(/&/, '')}"
+  string = "##{itinerarie_name.downcase.gsub(/\s/, '-').gsub(/&/, '').gsub(/'/, '')}"
 
   # Scrapping des cities de cet itinerarie_name
   doc.search("#{string} .page").each do |noko|
